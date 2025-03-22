@@ -1,4 +1,4 @@
-!/bin/sh
+#!/bin/sh
 
 # points to script dir
 DIR="$(dirname "$0")"
@@ -22,6 +22,10 @@ process_item() {
   for port in "$@"; do
     echo "Processing item: $1"
   done
+}
+
+kp() {
+ kill_port "$@" 
 }
 
 # ! REQUIRED !

@@ -99,18 +99,34 @@ docker_compose() {
 }
 
 kill_port() {
-  for port in "$@"; do
+    for port in "$@"; do
+        echo "Killing process on PORT ${port}..."
+        
+        if ! is_fn_defined lsof; then
+            error "lsof command not found. Please install lsof."
+        fi
+        
+        pid=$(lsof -t -i ":$port" 2>/dev/null) || true
+        
+        if [ -n "$pid" ]; then
+            echo_detail "Killing process with pid ${pid}..."
+            kill -9 "$pid" 2>/dev/null || echo "Error killing process: $?" >&2
+            return 0
+        fi
 
-    echo "Killing proccess on PORT ${port}"
-    local pid=$(lsof -t -i :${port})
-    if [ -n "$pid" ]; then
-        echo_detail "Killing procces with pid $pid"
-        kill -9 $pid
-    else
-        echo_detail "Skipping: No process running on PORT ${port}"
-    fi
+        if ! is_fn_defined docker; then
+            echo_detail "Docker is not installed. Not checking for containers on port ${port}"
+        else
+            container_id=$(docker ps -q --filter "publish=$port" 2>/dev/null) || true
+            if [ -n "$container_id" ]; then
+                echo_detail "Stopping Docker container ${container_id} using port ${port}..."
+                docker stop "$container_id" >/dev/null 2>&1 || error "stopping container: $?"
+                return 0
+            fi
+        fi
 
-  done
+        echo_detail "No process or Docker container found using PORT ${port}. Skipping..."
+    done
 }
 
 is_fn_defined() {

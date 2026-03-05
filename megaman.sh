@@ -87,17 +87,6 @@ try_copy_to_child_project() {
     fi
 }
 
-docker_compose() {
-    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-        docker compose "$@"
-    elif command -v docker-compose >/dev/null 2>&1; then
-        docker-compose "$@"
-    else
-        echo "Error: Neither 'docker compose' nor 'docker-compose' command found." >&2
-        return 1
-    fi
-}
-
 kill_port() {
     for port in "$@"; do
         echo "Killing process on PORT ${port}..."

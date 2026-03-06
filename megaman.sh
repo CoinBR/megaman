@@ -124,6 +124,18 @@ is_fn_defined() {
 }
 
 docker_compose() {
+  [ "$ENVIRONMENT" = "prod" ] && docker_compose_prod "$@" || docker_compose_dev "$@"
+}
+
+docker_compose_dev() {
+  _docker_compose_cmd -f docker-compose.base.yml -f docker-compose.dev.yml "$@"
+}
+
+docker_compose_prod() {
+  _docker_compose_cmd -f docker-compose.base.yml -f docker-compose.prod.yml "$@"
+}
+
+_docker_compose_cmd() {
     if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
         docker compose "$@"
     elif command -v docker-compose >/dev/null 2>&1; then

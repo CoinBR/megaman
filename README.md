@@ -28,7 +28,7 @@ DIR="$(dirname "$0")"
 
 # ! REQUIRED !
 # Source/Load the Megaman library
-. ${DIR}/megaman.sh
+. "${DIR}/submodules/megaman/megaman.sh"
 
 
 # REQUIRED!
